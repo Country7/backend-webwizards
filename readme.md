@@ -180,7 +180,12 @@ db/query/account.sql
 
 
 
+<br>
+<br>
+<br>
 
+# PS
 
+#### Собрать все зависимости из go.mod
 
-
+    $ go mod tidy
