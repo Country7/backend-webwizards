@@ -168,11 +168,17 @@ sqlc.yaml
 
 db/query/account.sql
 <https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#schema-and-queries>
+<br>
 
 
+# Тесты
 
+    _ "github.com/lib/pq"  // без драйвера работать не будет
 
+    $ go test -v   // все тесты
 
+    $ go test -timeout 30s ./db/sqlc -run ^TestMain$             
+        ok  	github.com/Country7/backend-webwizards/db/sqlc	0.433s [no tests to run]
 
 
 
