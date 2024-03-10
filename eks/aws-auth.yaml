@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapUsers: |
+    - userarn: arn:aws:iam::811910214758:user/jbd-cli
+      username: jbd-cli
+      groups:
+        - system:masters
+    - userarn: arn:aws:iam::811910214758:user/webwizards-gh-ci
+      username: webwizards-gh-ci
+      groups:
+        - system:masters
+      

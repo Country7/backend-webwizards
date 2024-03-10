@@ -1,0 +1,18 @@
+version: "2"
+sql:
+    - schema: "./db/migration/"
+      queries: "./db/query/"
+      engine: "postgresql"
+      gen:
+          go:
+              package: "db"
+              out: "./db/sqlc"
+              # sql_package: "pgx/v5"
+              emit_json_tags: true
+              emit_prepared_queries: false
+              emit_interface: true
+              emit_exact_table_names: false
+              emit_empty_slices: true
+      database:
+          uri: "postgresql://postgres:postgres@localhost:5432/postgres"
+          # uri: "postgresql://root:secret@localhost:5432/postgres16"  

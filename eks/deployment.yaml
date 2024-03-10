@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-webwizards-api-deployment
+  labels:
+    app: backend-webwizards-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-webwizards-api
+  template:
+    metadata:
+      labels:
+        app: backend-webwizards-api
+    spec:
+      containers:
+        - name: backend-webwizards-api
+          image: 811910214758.dkr.ecr.eu-west-3.amazonaws.com/backend-webwizards:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
