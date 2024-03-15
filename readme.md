@@ -4,6 +4,23 @@
     $ docker ps    // список всех запущенных контейнеров
     $ docker images   // список всех имеющихся образов
 
+## Удалить установленный Postgres
+
+    Uninstall the PostgreSQL application
+    $ sudo apt-get --purge remove postgresql
+    Remove PostgreSQL packages
+    $ dpkg -l | grep postgres
+    To uninstall PostgreSQL completely, you need to remove all of these packages using the following command:
+    $ sudo apt-get --purge remove <package_name>
+    Remove PostgreSQL directories
+    $ sudo rm -rf /var/lib/postgresql/
+    $ sudo rm -rf /var/log/postgresql/
+    $ sudo rm -rf /etc/postgresql/
+    Remove the postgres user
+    $ sudo deluser postgres
+    Verify uninstallation
+    $ psql --version
+
 ## Скачать образ
 
 <https://hub.docker.com/>   
@@ -180,7 +197,7 @@ db/query/account.sql
     $ go test -timeout 30s ./db/sqlc -run ^TestMain$             
         ok  	github.com/Country7/backend-webwizards/db/sqlc	0.433s [no tests to run]
 
-
+    $ make test   // команда test из файла Makefile
 
 
 

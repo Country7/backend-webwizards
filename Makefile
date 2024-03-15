@@ -28,7 +28,7 @@ migrate-down-1: ## Apply the last down migration.
 	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
 # https://hub.docker.com/_/postgres
-run-postgres: ## Start postgresql database docker image.
+run-postgres: ## Run postgresql database docker image.
 	docker run --name postgres16 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
 
 start-postgres16: ## Start available postgresql database docker container.
@@ -64,5 +64,5 @@ mock: ## Generate a store mock.
 build-docker-image: ## Build the Docker image.
 	docker build -t backend-webwizards:latest .
 
-.PHONY: start-postgres stop-postgres create-db drop-db migrate-up migrate-down run-postgres-cli \
- docker-system-clean sqlc test mock migrate-up-1 migrate-down-1 db-docs db-schema
+.PHONY: run-postgres start-postgres16 stop-postgres create-db drop-db migrate-up migrate-down \
+ run-postgres-cli docker-system-clean sqlc test mock migrate-up-1 migrate-down-1 db-docs db-schema
