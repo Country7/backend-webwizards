@@ -186,9 +186,10 @@ sqlc.yaml
 db/query/account.sql
 <https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#schema-and-queries>
 <br>
+<br>
 
 
-# Тесты
+# Тесты (5 часть)
 
     _ "github.com/lib/pq"  // без драйвера работать не будет
 
@@ -198,8 +199,69 @@ db/query/account.sql
         ok  	github.com/Country7/backend-webwizards/db/sqlc	0.433s [no tests to run]
 
     $ make test   // команда test из файла Makefile
+<br>
+<br>
 
 
+# Транзакции (6 часть)
+
+Перевод 10 USD
+из банка аккаунта 1
+в банк аккаунта 2
+
+1. Создайте запись о переводе с суммой = 10
+2. Создайте учетную запись для учетной записи 1 с суммой = -10
+3. Создайте учетную запись для учетной записи 2 с суммой = +10
+4. Вычтите 10 из баланса учетной записи 1
+5. Добавьте 10 к балансу учетной записи 2
+
+<br>
+
+> *    BEGIN
+> *    ...
+> *    COMMIT
+or
+> *    BEGIN
+> *    ...
+> *    ROLLBACK
+
+<br>
+
+```go
+    type Store interface {
+        Querier
+        TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+    }
+
+    // SQLStore provides all functions to execute SQL queries and transactions.
+    type SQLStore struct {
+        *Queries
+        db *sql.DB
+    }
+
+    func NewStore(db *sql.DB) Store {
+        return &SQLStore{db: db, Queries: New(db)}
+    }
+
+    // execTx executes a function within a database transaction.
+    func (s *SQLStore) execTx(ctx context.Context, fn func(queries *Queries) error) error {
+        tx, err := s.db.BeginTx(ctx, nil)
+        if err != nil {
+            return err
+        }
+
+        q := New(tx)
+        err = fn(q)
+        if err != nil {
+            if rbErr := tx.Rollback(); rbErr != nil {
+                return fmt.Errorf("tx err: %v, rb err: %v", err, rbErr)
+            }
+            return err
+        }
+
+        return tx.Commit()
+    }
+```
 
 
 
