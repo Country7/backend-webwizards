@@ -90,6 +90,8 @@ Port mapping
 ---------
 # TablePlus
 
+Для kubuntu лучше либо pgAdmin4 либо DBeaver
+
 <https://tableplus.com/>   
 `basename: root`, `user: root`, `password: secret`, `url: localhost:5432`
 <br>
