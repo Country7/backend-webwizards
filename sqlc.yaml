@@ -14,5 +14,5 @@ sql:
               emit_exact_table_names: false
               emit_empty_slices: true
       database:
-          uri: "postgresql://postgres:postgres@localhost:5432/postgres"
-          # uri: "postgresql://root:secret@localhost:5432/postgres16"  
+          # uri: "postgresql://postgres:postgres@localhost:5432/postgres"
+          uri: "postgresql://root:secret@localhost:5432/main_db"  

@@ -264,6 +264,42 @@ or
         return tx.Commit()
     }
 ```
+<br>
+<br>
+
+# Блокировка транзакции (7 часть)
+
+    BEGIN;
+    
+    SELECT * FROM accounts WHERE id = 1;
+
+    SELECT * FROM WHERE id = 1 FOR UPDATE;     // блокировка запросов
+    UPDATE accounts SET balance = 500 WHERE id = 1;
+    COMMIT;
+<br>
+
+    $ sqlc generate
+
+### Deadlock detected
+
+    INSERT INTO entries (account_id, amount) VALUES ($1, $2) RETURNING *;
+и
+    
+    SELECT * FROM accounts WHERE id = $1 LIMIT 1 FOR UPDATE;
+заблокируют друг друга (Deadlock detected) несмотря на то, что обращение идет к разным таблицам
+
+Эти две таблицы имеют связи FOREIGN KEY:   
+ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id");   
+при обращении к accounts происходит обновление ключа id в таблице accounts по связям с entries   
+чтобы этого не происходило необходима команда !!! NO KEY UPDATE
+
+    SELECT * FROM accounts WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE;
+
+<br><br>
+
+
+
+
 
 
 
