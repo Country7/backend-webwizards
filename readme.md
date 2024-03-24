@@ -298,6 +298,77 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 <br><br>
 
 
+# Взаимоблокировки (8 часть)
+
+```sql
+    BEGIN:
+    UPDATE accounts SET balance = balance - 10 WHERE id = 1 RETURNING *;
+    UPDATE accounts SET balance = balance + 10 WHERE id = 2 RETURNING *;
+    ROLLBACK;
+
+    BEGIN:
+    UPDATE accounts SET balance = balance - 10 WHERE id = 2 RETURNING *;
+    UPDATE accounts SET balance = balance + 10 WHERE id = 1 RETURNING *;
+    ROLLBACK;
+```
+
+Одновременно две эти транзакции приведут в взаимоблокировке (Deadlock detected)
+
+```go
+    if arg.FromAccountID < arg.ToAccountID {
+        result.FromAccount, result.ToAccount, err = addMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
+    } else {
+        result.ToAccount, result.FromAccount, err = addMoney(ctx, q, arg.ToAccountID, arg.Amount, arg.FromAccountID, -arg.Amount)
+    }
+```
+<br>
+<br>
+
+
+# Уровень изоляции транзакций (9 часть)
+
+
+1. Чтение незафиксированных транзакций (read uncommitted)
+2. Чтение зафиксированных данных (read committed)
+3. Повторяемый уровень изоляции чтения (repeatable read)
+4. Параллельные разрешения (serializable)
+
+```shell
+    mysql> select @@transaction_isolation;
+    mysql> select @@global.transaction_isolation;
+
+    mysql> set session transaction isolation level read uncommitted;
+    mysql> set session transaction isolation level read committed;
+    mysql> set session transaction isolation level repeatable read;
+    mysql> set session transaction isolation level serializable;
+```
+
+```shell
+    postgres=# show transaction isolation level;
+
+    postgres=# begin;
+    postgres=# set transaction isolation level read uncommitted;
+    # в postgres уровень read uncommitted ведет себя как read committed, как будто его нет
+    postgres=# set transaction isolation level read committed;
+    postgres=# set transaction isolation level repeatable read;
+    postgres=# set transaction isolation level serializable;
+    postgres=# show transaction isolation level;
+    postgres=# commit;
+```
+
+|                       |READ UNCOMMITTED   | READ COMMITTED    | REPEATABLE READ   | SERIALIZABLE  |
+|:-:                    |:-:                |:-:                |:-:                |:-:            |
+| DIRTY READ            | V                 |         -         |         -         |       -       |
+| NON-REPEATABLE READ   | V                 | V                 |         -         |       -       |
+| PHANTOM READ          | V                 | V                 |         -         |       -       |
+| SERIALIZATION ANOMALY | V                 | V                 | V                 |       -       |
+
+
+
+
+
+
+
 
 
 
