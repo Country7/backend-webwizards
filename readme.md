@@ -422,11 +422,34 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 
 Самый популярный - __Gin__ - <github.com/gin-gonic/gin>
 
-api/server.go
-api/account.go
+api/server.go   
+api/account.go   
+main.go
+
+в main.go обязательно добавить импорт драйвера
+
+    _ "github.com/lib/pq"
+
+Makefile:
+
+    server: ## Run the application server.
+        go run main.go
+
+__В целях тестирования запросов установить Postman__
+
+    GET http://localhost:8080/accounts
 
 
-00:09:40
+
+
+
+
+
+
+
+
+
+00:11:59
 
 
 
