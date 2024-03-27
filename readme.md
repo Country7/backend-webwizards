@@ -439,17 +439,20 @@ __В целях тестирования запросов установить P
 
     GET http://localhost:8080/accounts
 
+<br>
+<br>
+
+
+# Как безопасно хранить пароли Hash password в Go с помощью Bcrypt
+
+util/password.go
 
 
 
 
+00.06.51
 
 
-
-
-
-
-00:11:59
 
 
 
