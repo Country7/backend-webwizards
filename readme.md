@@ -443,9 +443,16 @@ __В целях тестирования запросов установить P
 <br>
 
 
-# Как безопасно хранить пароли Hash password в Go с помощью Bcrypt
+# Как безопасно хранить пароли Hash password в Go с помощью Bcrypt (17 часть: 2.7)
 
 util/password.go
+api/user.go
+api/validator.go
+
+github.com/go-playground/validator
+
+    alphanum	Alphanumeric
+    email	    E-mail String
 
 
 
