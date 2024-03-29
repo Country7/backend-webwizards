@@ -453,13 +453,13 @@ github.com/go-playground/validator
 
     alphanum	Alphanumeric
     email	    E-mail String
+<br>
+<br>
 
 
+# Модульные тесты с помощью gomock (18 часть: 2.8)
 
-
-00.06.51
-
-
+# Почему PASETO лучше, чем JWT, для аутентификации на основе токенов (19 часть: 2.9)
 
 
 
