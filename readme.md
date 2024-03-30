@@ -643,6 +643,129 @@ __утилита Postman:__
             }
         }
 ```
+<br>
+<br>
+
+
+
+# Middleware авторизации (22 часть: 2.12)
+
+#### Что такое промежуточное программное обеспечение?
+
+```
+|        | Send request                            |         |
+|        | -------------->        Route            |         |
+|        |                  /accounts/create       |         |
+|        |                          |              |         |
+|        |                          |              |         |
+|        |                          V              |         |
+|        |  ctx. Abort()       Middlewares         |         |
+| CLIENT | <--------------    Logger (ctx),        | SERVER  |
+|        | Send response        Auth(ctx)          |         |
+|        |                          |              |         |
+|        |                          | ctx.Next()   |         |
+|        |                          |              |         |
+|        |                          V              | Авторизация:
+|        | Send response         Handler  <--------- У пользователя
+|        | <--------------  createAccount(ctx)     | есть разрешение?
+|        |                                         |         |
+```
+<br>
+
+api/middleware.go   
+api/middleware_test.go   
+
+api/server.go   
+
+```go
+    router := gin.Default()
+    router.POST("/users/login", server.loginUSer)
+
+    authRoute := router.Group("/").Use(authMiddleware(server.tokenMaker))
+    authRoute.GET("/accounts", server.listAccount)
+```
+<br>
+
+#### ПРАВИЛА АВТОРИЗАЦИИ
+
+| | | |
+|:-:|:-:|:-:|
+| API <br> Create account | -------> | Правило <br> Авторизованный пользователь может создать <br> учетную запись только для себя |
+| API <br> Get account    | -------> | Правило <br> Авторизованный пользователь может получить <br> только те учетные записи, которыми он владеет|
+| API <br> List accounts  | -------> | Правило <br> Авторизованный пользователь может перечислять <br> только те учетные записи, которые принадлежат ему|
+| API <br> Transfer money | -------> | Правило <br> Авторизованный пользователь может отправлять <br> деньги только со своего собственного аккаунта|
+<br>
+
+```go
+api/account.go func createAccount
+
+    authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)    // добавили
+    arg := db.CreateAccountParams{
+        Owner:    authPayload.Username,   // было req.Owner
+        Balance:  0,
+        Currency: req.Currency,
+    }
+
+api/account.go func getAccount
+    
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)    // добавили
+	if account.Owner != authPayload.Username {
+		err := errors.New("account doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
+```
+
+```sql
+db/query/account.sql
+
+    -- name: ListAccounts :many
+    SELECT * FROM accounts
+    WHERE owner = $1            // добавлено условие
+    ORDER BY id LIMIT $2
+    OFFSET $3;
+
+    make sqlc       // db/sqlc/account.sql.go listAccounts обновился
+    make mock
+```
+
+```go
+db/sqlc/account_test.go  TestListAccounts   
+
+api/account.go  func listAccount
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)    // добавили
+	arg := db.ListAccountsParams{
+		Owner:  authPayload.Username,       // добавили
+		Limit:  req.PageSize,
+		Offset: (req.PageID - 1) * req.PageSize,
+	}
+
+api/transfer.go  
+
+    func (server *Server) validAccount(ctx *gin.Context, accountID int64, currency string) (db.Account, bool)
+    // добавили db.Account
+    return account, true
+
+    func createTransfer
+        fromAccount, valid := server.validAccount(ctx, req.FromAccountID, req.Currency)
+        if !valid {
+            return
+        }
+        authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+        if fromAccount.Owner != authPayload.Username {
+            err := errors.New("from account doesn't belong to the authenticated user")
+            ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+            return
+        }
+        _, valid = server.validAccount(ctx, req.ToAccountID, req.Currency)
+        if !valid {
+            return
+        }
+
+api/account_test.go
+```
+
 
 
 
