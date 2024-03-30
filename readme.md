@@ -586,11 +586,62 @@ github.com/go-playground/validator
 token/maker.go   
 token/payload.go   
 token/jwt_maker.go   
-token/jwt_maker_test.go
+token/jwt_maker_test.go   
 
 ```shell
     $ go get github.com/google/uuid
     $ go get github.com/golang-jwt/jwt/v5
+```
+
+token/paseto_maker.go   
+token/paseto_maker_test.go   
+
+```shell
+    $ go get github.com/o1egl/paseto/v2
+```
+<br>
+<br>
+
+
+# API для входа в систему через токен PASETO или JWT (21 часть: 2.11)
+
+api/server.go   
+app.env   
+util/config.go   
+api/main_test.go   
+api/transfer_test.go   
+api/user_test.go   
+api/account_test.go   
+main.go   
+
+api/user.go   
+api/server.go  router   
+
+__утилита Postman:__
+
+```json
+    POST http://localhost:8080/users/login
+    Body raw JSON
+        {
+            "username": "qwe",
+            "password": "1234567"
+        }
+
+    Response 200 OK
+        {
+            "session_id": "e7a1856e-aaa0-4226-9681-6ff7993dd789",
+            "access_token": "v2.local. ...",
+            "access_token_expires_at": "2024-03-30T16:05:55.116046+03:00",
+            "refresh_token": "v2.local. ...",
+            "refresh_token_expires_at": "2024-03-31T15:50:55.116324+03:00",
+            "user": {
+                "username": "qwe",
+                "full_name": "asdfgh",
+                "email": "zxc@mail.com",
+                "password_changed_at": "0001-01-01T00:00:00Z",
+                "created_at": "2024-03-27T17:34:06.837219Z"
+            }
+        }
 ```
 
 
