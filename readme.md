@@ -445,9 +445,9 @@ __В целях тестирования запросов установить P
 
 # Как безопасно хранить пароли Hash password в Go с помощью Bcrypt (17 часть: 2.7)
 
-util/password.go
-api/user.go
-api/validator.go
+util/password.go   
+api/user.go   
+api/validator.go   
 
 github.com/go-playground/validator
 
@@ -479,8 +479,6 @@ github.com/go-playground/validator
 |:-:        |-:                                                                     |:-                 |:-:        |
 | Client    | 200 OK <br> <----------------------- <br> [account1, account2, ...]   | <-- Verify token  | Server    |
 
-
-### JWT SIGNING ALGORITHMS
 
 ### АЛГОРИТМЫ ПОДПИСИ JWT
 
@@ -561,7 +559,7 @@ github.com/go-playground/validator
         - Цифровая подпись
         - Ed25519 [EdDSA + Curve25519]
 
-```json
+```javascript
 • Version: v2
 • Purpose: public [asymmetric-key digital signature]
 • Payload:
@@ -579,9 +577,21 @@ github.com/go-playground/validator
     f8207c86b5e29edc74cb8c761318723532d0aa27e1120cb36813ba2d90
     8cda985b2408
 ```
+<br>
+<br>
 
 
+# Создать и верифицировать токен JWT & PASETO (20 часть: 2.10)
 
+token/maker.go   
+token/payload.go   
+token/jwt_maker.go   
+token/jwt_maker_test.go
+
+```shell
+    $ go get github.com/google/uuid
+    $ go get github.com/golang-jwt/jwt/v5
+```
 
 
 
