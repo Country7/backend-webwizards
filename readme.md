@@ -462,9 +462,110 @@ main.go
 ```
 
 db/sqlc/main_test.go
+<br>
+<br>
 
 
+# Mock DB (макет) - тестирование HTTP API и 100% охвата (13 часть: 2.3)
 
+#### Подготовка:
+
+```shell
+    $ go get go.uber.org/mock
+    $ go install go.uber.org/mock/mockgen@latest
+    $ ls -l ~/go/bin
+        // проверить ~/go/bin/mockgen
+    $ which mockgen
+        ~/go/bin/mockgen
+    Если нет, то:
+    $ vi ~/.zshrc           // для mac
+    $ vi ~/.bash_profile    // или для другого терминала
+        i
+        export PATH=$PATH:~/go/bin
+        esc
+        :wq
+    $ source ~/.zshrc
+    $ which mockgen
+        ~/go/bin/mockgen
+    $ mockgen -help
+```
+
+```go
+    // БЫЛО:
+
+    // api/server.go
+    func NewServer(config util.Config, store *db.Store) (*Server, error)
+        // для подключения к реальной базе данных используется store *db.Store
+        // для тестов mock (с макетом) его надо заменить интерфейсом
+    
+    // db/sqlc/store.go
+    type Store struct {
+        db *sql.DB
+        *Queries
+    }
+    func NewStore(db *sqL.DB) *Store {
+        return &Store {
+            db: db,
+            Queries: New(db),
+        }
+    }
+    func (s *Store) execTx(ctx context.Context, fn func(queries *Queries) error) error
+    func (s *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+
+    // sqlc.yaml
+    emit_interface: false
+
+    // ПЕРЕПИСЫВАЕМ:
+
+    // sqlc.yaml
+    emit_interface: true    // было false
+    $ make sqlc             // обновить в терминале
+        // создался новый файл с интерфейсом db/sqlc/querier.go  
+
+    // db/sqlc/store.go
+    type Store interface {
+        Querier             // интерфейс из нового файла  db/sqlc/querier.go
+        TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+    }
+    type SQLStore struct {
+        *Queries
+        db *sql.DB
+    }
+    func NewStore(db *sql.DB) Store {
+        return &SQLStore{db: db, Queries: New(db)}
+    }
+    func (s *SQLStore) execTx(ctx context.Context, fn func(queries *Queries) error) error
+    func (s *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+
+    // api/server.go
+    type Server struct {
+        config     util.Config
+        store      db.Store     // убрали * у db.Store, это теперь не указатель, а интерфейс
+        tokenMaker token.Maker
+        router     *gin.Engine
+    }
+    func NewServer(config util.Config, store db.Store) (*Server, error)  // убрали * у db.Store, это теперь не указатель, а интерфейс
+```
+
+#### Создаем пакет db/moc:
+
+создаем папку db/moc
+
+```shell
+    $ mockgen -package mockdb -destination db/mock/store.go github.com/Country7/backend-webwizards/db/sqlc Store
+        // создался файл db/mock/store.go
+
+    // добавляем команду в файл Makefile
+    mock: ## Generate a store mock.
+	    mockgen -package mockdb -destination db/mock/store.go github.com/Country7/backend-webwizards/db/sqlc Store
+```
+
+#### Приступаем к написанию тестов:
+
+api/account_test.go   
+
+
+00:11:29
 
 
 
