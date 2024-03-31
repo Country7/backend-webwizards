@@ -443,6 +443,39 @@ __В целях тестирования запросов установить P
 <br>
 
 
+# Конфигурация из файла и переменных окружения - Viper (12 часть: 2.2)
+
+```shell
+    $ go get github.com/spf13/viper
+```
+
+app.env   
+util/config.go   
+main.go   
+
+```go
+    config, err := util.LoadConfig(".")
+```
+
+```shell
+    $ SERVER_ADDRESS=0.0.0.0:8081 make server
+```
+
+db/sqlc/main_test.go
+
+
+
+
+
+
+
+
+
+
+
+
+# ---------------------------------------------
+
 # Как безопасно хранить пароли Hash password в Go с помощью Bcrypt (17 часть: 2.7)
 
 util/password.go   
