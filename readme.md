@@ -4,6 +4,10 @@
 
     ->  Go to App
         Export PostgreSQL
+
+doc/db.dbml
+doc/schema.sql
+
 <br>
 <br>
 
@@ -673,9 +677,57 @@ util/random.go
 <br>
 
 
-# 15. (2.5)
+# 15. Добавление таблицы users с ограничениями уникальности и внешнего ключа (2.5)
 
+[diagram.io](https://dbdiagram.io/home)
 
+->  Go to App   
+
+    Table users as U {
+        username varchar [pk]
+        role varchar [not null, default: 'depositor']
+        hashed_password varchar [not null]
+        full_name varchar [not null]
+        email varchar [unique, not null]
+        is_email_verified bool [not null, default: false]
+        password_changed_at timestamptz [not null, default: '0001-01-01']
+        created_at timestamptz [not null, default: `now()`]
+    }
+
+    Table accounts as A {
+        ...
+        owner varchar [ref: > U.username, not null]
+        ...
+        Indexes {
+            owner
+            (owner, currency) [unique]  // в одной валюте только один счет у пользователя
+                                        // в разной валюте может быть несколько счетов
+        }
+    }
+
+Export PostgreSQL
+
+```shell
+    $ migrate -help
+    $ migrate create -ext sql -dir db/migration -seq add_users
+```
+
+В созданный файл db/migration/000002_add_users.up.sql копируем изменения из doc/schema.sql (таблицу users и ключи)
+
+```shell
+    $ make migrateup
+        // ошибка, так как данные accounts есть, а их в новой таблице users - нет
+    $ make migratedown
+        // ошибка, надо вручную менять значение в БД / таблице schema_migrations с TRUE на FALSE
+    $ make migratedown
+        // удалились все таблицы
+    $ make migrateup
+```
+
+В файле db/migration/000002_add_users.down.sql грохаем ключи, грохаем таблицу users
+
+<br>
+<br>
 
 
 
