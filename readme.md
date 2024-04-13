@@ -1,5 +1,13 @@
+# 1. Cхема БД и SQL-код
 
-# Docker  Postgres  (2 часть)
+[diagram.io](https://dbdiagram.io/home)
+
+    ->  Go to App
+        Export PostgreSQL
+<br>
+<br>
+
+# 2. Docker  Postgres
 
     $ docker ps    // список всех запущенных контейнеров
     $ docker images   // список всех имеющихся образов
@@ -23,7 +31,7 @@
 
 ## Скачать образ
 
-<https://hub.docker.com/>   
+[hub.docker.com](https://hub.docker.com/)   
 поиск postgres   
 <https://hub.docker.com/_/postgres>
 
@@ -92,15 +100,15 @@ Port mapping
 
 Для kubuntu лучше либо pgAdmin4 либо DBeaver
 
-<https://tableplus.com/>   
+Для mac - [tableplus.com](https://tableplus.com/)   
 `basename: root`, `user: root`, `password: secret`, `url: localhost:5432`
 <br>
 <br>
 
 ---------
-# Миграции  (3 часть)
+# 3. Миграции
 
-<https://github.com/golang-migrate/migrate>
+[github.com/golang-migrate/migrate](https://github.com/golang-migrate/migrate)
 
     $ brew install golang-migrate
     $ migrate -version
@@ -143,7 +151,7 @@ Port mapping
 
 
 ---------
-# CRUD  (4 часть)
+# 4. CRUD
 
 * Create
 * Read
@@ -172,26 +180,27 @@ Port mapping
 > * Отслеживание ошибок запроса SQL перед генерацией кодов
 > * Полная поддержка Postgres. MySQL является экспериментальным
 
-<https://sqlc.dev/>   
-<https://github.com/sqlc-dev/sqlc>
+[sqlc.dev](https://sqlc.dev/)   
+[github.com/sqlc-dev/sqlc](https://github.com/sqlc-dev/sqlc)
 
     $ brew install sqlc
     $ sqlc version
     $ sqlc help
     $ sqlc init
 
-sqlc.yaml
-<https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#setting-up>
+sqlc.yaml   
+[docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#setting-up](https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#setting-up)
+
 
     $ sqlc generate
 
-db/query/account.sql
-<https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#schema-and-queries>
+db/query/account.sql   
+[docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#schema-and-queries](https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html#schema-and-queries)
 <br>
 <br>
 
 
-# Тесты (5 часть)
+# 5. Тесты
 
     _ "github.com/lib/pq"  // без драйвера работать не будет
 
@@ -205,7 +214,7 @@ db/query/account.sql
 <br>
 
 
-# Транзакции (6 часть)
+# 6. Транзакции
 
 Перевод 10 USD из банка аккаунта 1 в банк аккаунта 2:
 
@@ -265,7 +274,7 @@ or
 <br>
 <br>
 
-# Блокировка транзакции (7 часть)
+# 7. Блокировка транзакции
 
     BEGIN;
     
@@ -296,7 +305,7 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 <br><br>
 
 
-# Взаимоблокировки (8 часть)
+# 8. Взаимоблокировки
 
 ```sql
     BEGIN:
@@ -323,7 +332,7 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 <br>
 
 
-# Уровень изоляции транзакций (9 часть)
+# 9. Уровень изоляции транзакций
 
 
 1. Чтение незафиксированных транзакций (read uncommitted)
@@ -364,7 +373,7 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 <br>
 
 
-# Действие на Github Go + Postgres (10 часть)
+# 10. Действие на Github Go + Postgres
 
 > __Рабочий процесс:__
 > * Является автоматизированной процедурой
@@ -398,7 +407,7 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 
 # ---------------------------------------------
 
-# Реализация RESTful HTTP API в Go с помощью Gin (11 часть: 2.1)
+# 11. Реализация RESTful HTTP API в Go с помощью Gin (2.1)
 
 > __Стандартный пакет net/http__
 <br>
@@ -420,7 +429,7 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 > * Chi
 <br>
 
-Самый популярный - __Gin__ - <github.com/gin-gonic/gin>
+Самый популярный - __Gin__ - [github.com/gin-gonic/gin](https://github.com/gin-gonic/gin)
 
 api/server.go   
 api/account.go   
@@ -443,7 +452,7 @@ __В целях тестирования запросов установить P
 <br>
 
 
-# Конфигурация из файла и переменных окружения - Viper (12 часть: 2.2)
+# 12. Конфигурация из файла и переменных окружения - Viper (2.2)
 
 ```shell
     $ go get github.com/spf13/viper
@@ -466,7 +475,7 @@ db/sqlc/main_test.go
 <br>
 
 
-# Mock DB (макет) - тестирование HTTP API и 100% охвата (13 часть: 2.3)
+# 13. Mock DB (макет) - тестирование HTTP API и 100% охвата (2.3)
 
 #### Подготовка:
 
@@ -563,9 +572,108 @@ db/sqlc/main_test.go
 #### Приступаем к написанию тестов:
 
 api/account_test.go   
+<br>
+<br>
 
 
-00:11:29
+# 14. Пользовательский валидатор параметров - __transfer__ (2.4)
+
+api/transfer.go   
+
+api/server.go   
+```go
+    authRoute.POST("/transfers", server.createTransfer)
+```
+
+__Postman:__
+
+    POST http://localhost:8080/transfers
+    Body raw JSON
+    {
+        "from_account_id": 1,
+        "to_account_id": 2,
+        "amount": 10,
+        "currency": "USD"
+    }
+
+api/validator.go   
+```go
+    import ( "github.com/go-playground/validator/v10" )
+    var validCurrency validator.Func = func(fieldLevel validator.FieldLevel) bool {
+        if currency, ok := fieldLevel.Field().Interface().(string); ok {
+            return util.IsSupportedCurrency(currency)
+        }
+        return false
+    }
+```
+
+util/currency.go   
+```go
+    const (
+        USD = "USD"
+        EUR = "EUR"
+        CAD = "CAD" )
+    // IsSupportedCurrency returns true if the currency is supported.
+    func IsSupportedCurrency(currency string) bool {
+        switch currency {
+        case CAD, EUR, USD:
+            return true
+        default:
+            return false
+        }
+    }
+```
+
+__Регистрация вадидатора на сервере__   
+api/server.go
+```go
+    import ("github.com/gin-gonic/gin/binding")
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("currency", validCurrency)
+	}
+```
+
+api/account.go
+```go
+    type createAccountRequest struct {
+        ...
+        Currency string `json:"currency" binding:"required,currency"`
+    }
+```
+
+api/transfer.go
+```go
+    type transferRequest struct {
+        ...
+        Currency string `json:"currency" binding:"required,currency"`
+    }
+```
+
+__Postman:__
+
+    POST http://localhost:8080/transfers
+    Body raw JSON
+    {
+        "from_account_id": 1,
+        "to_account_id": 2,
+        "amount": 10,
+        "currency": "EUR"
+    }
+
+util/random.go
+```go
+    // RandomCurrency generates a random currency code.
+    func RandomCurrency() string {
+        currencies := []string{EUR, USD, CAD}
+        n := len(currencies)
+        return currencies[rand.Intn(n)]
+    }
+```
+<br>
+<br>
+
+
+# 15. (2.5)
 
 
 
@@ -574,10 +682,14 @@ api/account_test.go
 
 
 
+
+
+<br>
+<br>
 
 # ---------------------------------------------
 
-# Как безопасно хранить пароли Hash password в Go с помощью Bcrypt (17 часть: 2.7)
+# 17. Безопасное хранение паролей Hash password в Go с помощью Bcrypt (2.7)
 
 util/password.go   
 api/user.go   
@@ -591,9 +703,10 @@ github.com/go-playground/validator
 <br>
 
 
-# Модульные тесты с помощью gomock (18 часть: 2.8)
+# 18. Модульные тесты с помощью gomock (2.8)
+<br>
 
-# Почему PASETO лучше, чем JWT, для аутентификации на основе токенов (19 часть: 2.9)
+# 19. Почему PASETO лучше, чем JWT, для аутентификации на основе токенов (2.9)
 
 ### Token-based Authentication
 
@@ -715,7 +828,7 @@ github.com/go-playground/validator
 <br>
 
 
-# Создать и верифицировать токен JWT & PASETO (20 часть: 2.10)
+# 20. Создать и верифицировать токен JWT & PASETO (2.10)
 
 token/maker.go   
 token/payload.go   
@@ -737,7 +850,7 @@ token/paseto_maker_test.go
 <br>
 
 
-# API для входа в систему через токен PASETO или JWT (21 часть: 2.11)
+# 21. API для входа в систему через токен PASETO или JWT (2.11)
 
 api/server.go   
 app.env   
@@ -782,7 +895,7 @@ __утилита Postman:__
 
 
 
-# Middleware авторизации (22 часть: 2.12)
+# 22. Middleware авторизации (2.12)
 
 #### Что такое промежуточное программное обеспечение?
 
