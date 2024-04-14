@@ -1,4 +1,6 @@
-# 1. Cхема БД и SQL-код
+# __I. Работа с базой данных__
+
+## 1. Cхема БД и SQL-код
 
 [diagram.io](https://dbdiagram.io/home)
 
@@ -11,12 +13,12 @@ doc/schema.sql
 <br>
 <br>
 
-# 2. Docker  Postgres
+## 2. Docker  Postgres
 
     $ docker ps    // список всех запущенных контейнеров
     $ docker images   // список всех имеющихся образов
 
-## Удалить установленный Postgres
+__Удалить установленный Postgres__
 
     Uninstall the PostgreSQL application
     $ sudo apt-get --purge remove postgresql
@@ -33,7 +35,7 @@ doc/schema.sql
     Verify uninstallation
     $ psql --version
 
-## Скачать образ
+__Скачать образ__
 
 [hub.docker.com](https://hub.docker.com/)   
 поиск postgres   
@@ -43,11 +45,12 @@ doc/schema.sql
     $ docker pull postgres:16-alpine
 <br>
 
-## Запуск контейнера из образа
+__Запуск контейнера из образа__
 
-`docker run --name <container_name> -e <environment_variable> -d <image>:<tag>`
+    docker run --name <container_name> -e <environment_variable> -d <image>:<tag>
 
-__Environment Variables:__
+___Environment Variables:___
+
 * POSTGRES_PASSWORD   
 * POSTGRES_USER   
 * POSTGRES_DB   
@@ -67,10 +70,12 @@ $ docker run -d \
 ```
 
 пароли можно подгружать из файла:   
-    `$ docker run --name some-postgres -e POSTGRES_PASSWORD_FILE=/run/secrets/postgres-passwd -d postgres`
+
+    $ docker run --name some-postgres -e POSTGRES_PASSWORD_FILE=/run/secrets/postgres-passwd -d postgres
 
 Port mapping    
-    `docker run --name ‹container_name> -e ‹environment_variable> -p ‹host_ports:container_ports> -d ‹image>:<tag>`
+
+    docker run --name ‹container_name> -e ‹environment_variable> -p ‹host_ports:container_ports> -d ‹image>:<tag>
 
     $ docker run --name postgres16 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
     $ docker ps
@@ -81,7 +86,7 @@ Port mapping
     $ docker rm postgres16   // удалить полностью имеющийся контейнер
 <br>
 
-## Запуск команды в контейнере
+__Запуск команды в контейнере__
 
     docker exec -it ‹container _name_or_id> ‹command> [args]
 
@@ -92,7 +97,7 @@ Port mapping
     $ docker exec -it postgres16 /bin/sh     // запускаем оболочку в контейнере
 <br>
 
-## Просмотр логов контейнера
+__Просмотр логов контейнера__
 
     docker logs <container_name_or_id>
     $ docker logs postgres16
@@ -100,17 +105,23 @@ Port mapping
 <br>
 
 ---------
-# TablePlus
+
+__TablePlus__
 
 Для kubuntu лучше либо pgAdmin4 либо DBeaver
 
-Для mac - [tableplus.com](https://tableplus.com/)   
-`basename: root`, `user: root`, `password: secret`, `url: localhost:5432`
+Для mac - [tableplus.com](https://tableplus.com/)  
+
+    basename: root
+    user: root
+    password: secret
+    url: localhost:5432
+
 <br>
 <br>
 
----------
-# 3. Миграции
+---------   
+## 3. Миграции
 
 [github.com/golang-migrate/migrate](https://github.com/golang-migrate/migrate)
 
@@ -132,7 +143,7 @@ Port mapping
     $ docker exec -it postgres12 psql -U root main_db
         \q
 
-### Миграция в проекте
+__Миграция в проекте__
 
     $ set -e
     $ source ./app.env
@@ -141,7 +152,7 @@ Port mapping
 
 <br>
 
-## Cоздаем Makefile
+__Cоздаем Makefile__
 
     run-postgres: ## Start postgresql database docker image.
         docker run --name postgres16 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
@@ -155,7 +166,7 @@ Port mapping
 
 
 ---------
-# 4. CRUD
+## 4. CRUD
 
 * Create
 * Read
@@ -204,7 +215,7 @@ db/query/account.sql
 <br>
 
 
-# 5. Тесты
+## 5. Тесты
 
     _ "github.com/lib/pq"  // без драйвера работать не будет
 
@@ -218,7 +229,7 @@ db/query/account.sql
 <br>
 
 
-# 6. Транзакции
+## 6. Транзакции
 
 Перевод 10 USD из банка аккаунта 1 в банк аккаунта 2:
 
@@ -278,7 +289,7 @@ or
 <br>
 <br>
 
-# 7. Блокировка транзакции
+## 7. Блокировка транзакции
 
     BEGIN;
     
@@ -291,7 +302,7 @@ or
 
     $ sqlc generate
 
-### Deadlock detected
+__Deadlock detected__
 
     INSERT INTO entries (account_id, amount) VALUES ($1, $2) RETURNING *;
 и
@@ -309,7 +320,7 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 <br><br>
 
 
-# 8. Взаимоблокировки
+## 8. Взаимоблокировки
 
 ```sql
     BEGIN:
@@ -336,7 +347,7 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 <br>
 
 
-# 9. Уровень изоляции транзакций
+## 9. Уровень изоляции транзакций
 
 
 1. Чтение незафиксированных транзакций (read uncommitted)
@@ -377,7 +388,7 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 <br>
 
 
-# 10. Действие на Github Go + Postgres
+## 10. Действие на Github Go + Postgres
 
 > __Рабочий процесс:__
 > * Является автоматизированной процедурой
@@ -409,9 +420,13 @@ ALTER TABLE "entries" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id"
 <br>
 <br>
 
-# ---------------------------------------------
+## ---------------------------------------------
 
-# 11. Реализация RESTful HTTP API в Go с помощью Gin (2.1)
+## ---------------------------------------------
+
+# __II. Создание RESTful HTTP JSON API__
+
+## 11. Реализация RESTful HTTP API в Go с помощью Gin (2.1)
 
 > __Стандартный пакет net/http__
 <br>
@@ -456,7 +471,7 @@ __В целях тестирования запросов установить P
 <br>
 
 
-# 12. Конфигурация из файла и переменных окружения - Viper (2.2)
+## 12. Конфигурация из файла и переменных окружения - Viper (2.2)
 
 ```shell
     $ go get github.com/spf13/viper
@@ -479,9 +494,9 @@ db/sqlc/main_test.go
 <br>
 
 
-# 13. Mock DB (макет) - тестирование HTTP API и 100% охвата (2.3)
+## 13. Mock DB (макет) - тестирование HTTP API и 100% охвата (2.3)
 
-#### Подготовка:
+__Подготовка:__
 
 ```shell
     $ go get go.uber.org/mock
@@ -560,7 +575,7 @@ db/sqlc/main_test.go
     func NewServer(config util.Config, store db.Store) (*Server, error)  // убрали * у db.Store, это теперь не указатель, а интерфейс
 ```
 
-#### Создаем пакет db/moc:
+__Создаем пакет db/moc:__
 
 создаем папку db/moc
 
@@ -573,14 +588,14 @@ db/sqlc/main_test.go
 	    mockgen -package mockdb -destination db/mock/store.go github.com/Country7/backend-webwizards/db/sqlc Store
 ```
 
-#### Приступаем к написанию тестов:
+__Приступаем к написанию тестов:__
 
 api/account_test.go   
 <br>
 <br>
 
 
-# 14. Пользовательский валидатор параметров - __transfer__ (2.4)
+## 14. Пользовательский валидатор параметров - __transfer__ (2.4)
 
 api/transfer.go   
 
@@ -678,7 +693,7 @@ util/random.go
 <br>
 
 
-# 15. Добавление таблицы users с ограничениями уникальности и внешнего ключа (2.5)
+## 15. Добавление таблицы users с ограничениями уникальности и внешнего ключа (2.5)
 
 [diagram.io](https://dbdiagram.io/home)
 
@@ -731,7 +746,7 @@ Export PostgreSQL
 <br>
 
 
-# 16. Обработка ошибок базы данных (2.6)
+## 16. Обработка ошибок базы данных (2.6)
 
 db/query/user.sql
 ```shell
@@ -815,9 +830,9 @@ __Postman:__
 <br>
 <br>
 
-# ---------------------------------------------
+## ---------------------------------------------
 
-# 17. Безопасное хранение паролей Hash password в Go с помощью Bcrypt (2.7)
+## 17. Безопасное хранение паролей Hash password в Go с помощью Bcrypt (2.7)
 
 util/password.go   
 api/user.go   
@@ -831,10 +846,10 @@ github.com/go-playground/validator
 <br>
 
 
-# 18. Модульные тесты с помощью gomock (2.8)
+## 18. Модульные тесты с помощью gomock (2.8)
 <br>
 
-# 19. Почему PASETO лучше, чем JWT, для аутентификации на основе токенов (2.9)
+## 19. Почему PASETO лучше, чем JWT, для аутентификации на основе токенов (2.9)
 
 ### Token-based Authentication
 
@@ -874,7 +889,7 @@ github.com/go-playground/validator
     ZvkYYnyM929FM4NW9_hSis7_x3_9rymsDAx9yuOcc1I
 ```
 
-#### Алгоритм симметричной цифровой подписи
+__Алгоритм симметричной цифровой подписи__
 * Для подписи и проверки используется один и тот же секретный ключ, токен
 * Для локального использования: внутренние службы, где можно совместно использовать секретный ключ
 * HS256, HS384, HS512  
@@ -883,7 +898,7 @@ github.com/go-playground/validator
     - SHA: Secure Hash Algorithm - Алгоритм безопасного хэширования  
     - 256/384/512: количество выходных битов   
 
-#### Алгоритм асимметричной цифровой подписи
+__Алгоритм асимметричной цифровой подписи__
 * Закрытый ключ используется для подписи токена
 * Открытый ключ используется для проверки токена
 * Для публичного использования: внутренняя служба подписывает токен, но внешняя служба должна его подтвердить
@@ -894,26 +909,26 @@ github.com/go-playground/validator
 
 ### В чем проблема JWT?
 
-#### Слабые алгоритмы
+__Слабые алгоритмы__
 * Дают разработчикам слишком много алгоритмов на выбор
 * Известно, что некоторые алгоритмы уязвимы:
 * RSA PKCSv1.5: атака на oracle с дополнением
 * ECDSA: атака с недопустимой кривой
 
-#### Тривиальная подделка
+__Тривиальная подделка__
 * Установите для заголовка "alg" значение "none"
 * Установите для заголовка "alg" значение "HS256", в то время как сервер обычно проверяет токен с помощью открытого ключа RSA
 
 
-## Platform-Agnostic SEcurity TOkens [PASETO] Независимые от платформы токены безопасности
+### Platform-Agnostic SEcurity TOkens [PASETO] Независимые от платформы токены безопасности
 
-#### Более надежные алгоритмы
+__Более надежные алгоритмы__
 * Разработчикам не нужно выбирать алгоритм 
 * Нужно только выбрать версию PASETO 
 * Каждая версия имеет 1 набор надежных шифров 
 * Принимаются только 2 самые последние версии PASETO
 
-#### Нетривиальная подделка
+__Нетривиальная подделка__
 * Больше никакого заголовка "alg" или алгоритма "none"
 * Все аутентифицировано
 * Зашифрованная полезная нагрузка для локального использования <симметричный ключ>   
@@ -956,7 +971,7 @@ github.com/go-playground/validator
 <br>
 
 
-# 20. Создать и верифицировать токен JWT & PASETO (2.10)
+## 20. Создать и верифицировать токен JWT & PASETO (2.10)
 
 token/maker.go   
 token/payload.go   
@@ -978,7 +993,7 @@ token/paseto_maker_test.go
 <br>
 
 
-# 21. API для входа в систему через токен PASETO или JWT (2.11)
+## 21. API для входа в систему через токен PASETO или JWT (2.11)
 
 api/server.go   
 app.env   
@@ -1023,9 +1038,9 @@ __утилита Postman:__
 
 
 
-# 22. Middleware авторизации (2.12)
+## 22. Middleware авторизации (2.12)
 
-#### Что такое промежуточное программное обеспечение?
+__Что такое промежуточное программное обеспечение?__
 
 ```
 |        | Send request                            |         |
@@ -1061,7 +1076,7 @@ api/server.go
 ```
 <br>
 
-#### ПРАВИЛА АВТОРИЗАЦИИ
+__ПРАВИЛА АВТОРИЗАЦИИ__
 
 | | | |
 |:-:|:-:|:-:|
@@ -1140,6 +1155,166 @@ api/transfer.go
 
 api/account_test.go
 ```
+
+<br>
+<br>
+<br>
+
+## ---------------------------------------------
+## ---------------------------------------------
+
+# __III. Развертывание приложения в рабочей среде (Deploying the application to production)__
+
+## 23. Образ Golang Docker с помощью многоступенчатого файла Dockerfile (3.1)
+
+    $ git checkout -b deploying
+
+update go
+
+go.mod   
+
+    go 1.22
+
+.github/workflows/test.yml
+
+    go-version: '1.22'
+
+    $ git status
+    $ git add .
+    $ git status
+    $ git commit -m"update go to 1.22"
+    $ git push -u origin deploying
+
+Из терминала переходим по ссылке    
+<https://github.com/Country7/backend-webwizards/pull/new/deploying>
+
+    Name -> Add docker
+    -> Create pull request
+
+    $ brew upgrade golang-migrate
+    $ migrate -version
+        v4.17.0
+    $ make migrate-up
+
+.github/workflows/test.yml
+
+    curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+
+    $ git add .
+    $ git status
+    $ git commit -m"upgrade golang-migrate to v4.17.0"
+    $ git push
+
+__Если тесты на github пройдены, то приложение готово к 1 запуску__
+
+Создаем __Dockerfile__:
+
+<https://hub.docker.com/_/golang>
+
+    FROM golang:1.22.2-alpine3.19
+    WORKDIR /app
+    COPY . .
+    RUN go build -o main main.go
+    EXPOSE 8080
+    CMD [ "/app/main" ]
+
+    $ docker build --help
+    $ docker build -t webwizards:latest .
+    $ docker images
+        webwizards latest 601MB
+
+Размер образа получился 601Мб, чтобы уменьшить размер образа нужно применить многоступенчатую сборку. Нам в образе нужен только исполняемый файл.   
+__Dockerfile__:
+
+    # Build stage
+        FROM golang:1.22.2-alpine3.19 AS builder
+        WORKDIR /app
+        COPY . .
+        RUN go build -o main main.go
+    # Run stage
+        FROM alpine:3.19
+        WORKDIR /app
+        COPY --from=builder /app/main .
+        EXPOSE 8080
+        CMD [ "/app/main" ]
+
+    $ docker build -t webwizards:latest .
+    $ docker images
+        webwizards latest 21MB
+
+    $ docker rmi 61504815c89a   // удалить старый образ IMAGE ID = 61504815c89a
+
+<br>
+<br>
+
+## 24. Подключить контейнеры в одной сети docker (3.2)
+
+    $ docker run --name webwizards -p 8080:8080 webwizards:latest
+        cannot load config:Config File "app" Not Found in "[/app]"
+    $ docker ps -a
+    $ docker rm webwizards
+    $ docker images
+    $ docker rmi a4809227e909
+
+__Dockerfile__:
+
+    COPY app.env .
+
+    $ docker build -t webwizards:latest .
+    $ docker images
+    $ docker run --name webwizards -p 8080:8080 webwizards:latest
+        Running in "debug" mode. Switch to "release" mode in production.
+        - using env:	export GIN_MODE=release
+    $ docker rm webwizards
+    $ docker run --name webwizards -p 8080:8080 -e GIN_MODE=release webwizards:latest
+    $ docker ps
+
+__Postman__: "error": "dial tcp 127.0.0.1:5432: connect: connection refused"   
+__Terminal__: [GIN] | 500 | 1.437083ms | 192.168.65.1 | POST "/users/login"    
+__app.env__: DB_SOURCE=postgresql://root:secret@localhost:5432/main_db?sslmode=disable
+
+    $ docker container inspect postgres16
+        "NetworkSettings": "Networks": "bridge": "IPAddress": "172.17.0.2"
+    $ docker container inspect webwizards
+        "NetworkSettings": "Networks": "bridge": "IPAddress": "172.17.0.3"
+
+    $ docker stop webwizards
+    $ docker rm webwizards
+    $ docker run --name webwizards -p 8080:8080 -e GIN_MODE=release -e "DB_SOURCE=postgresql://root:secret@172.17.0.2:5432/main_db?sslmode=disable" webwizards:latest
+
+__Postman__: Status 200 OK
+
+### Способ получше (подключиться к контейнеру postgres16 по имени, а не по ip адресу)
+
+    $ docker rm webwizards
+    $ docker network ls
+        9a00594f4037 bridge bridge local
+    $ docker network inspect bridge
+        "Containers": "Name": "postgres16"
+    // контейнеры в мостовой сети bridge не могут видеть друг друга по имени, как в других сетях
+    // поэтому нужно создать свою сеть и подключить к ней контейнер
+    $ docker network --help
+    $ docker network create ww-network
+    $ docker network connect --help 
+    $ docker network connect ww-network postgres16
+    $ docker container inspect postgres16
+        "Networks":
+            "bridge": "IPAddress": "172.17.0.2"
+            "ww-network": "IPAddress": "172.18.0.2"
+    $ docker run --name webwizards --network ww-network -p 8080:8080 -e GIN_MODE=release -e "DB_SOURCE=postgresql://root:secret@postgres16:5432/main_db?sslmode=disable" webwizards:latest
+
+__Postman__: Status 200 OK
+__Terminal__: [GIN] | 200 | 101.980875ms | 192.168.65.1 | POST "/users/login"
+
+    $ docker network inspect ww-network
+        "Containers":
+            "Name": "postgres16"
+            "Name": "webwizards",
+
+Makefile
+
+    run-postgres: ## Run postgresql database docker image.
+	    docker run --name postgres16 --network ww-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
 
 
 

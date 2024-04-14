@@ -6,14 +6,14 @@ help: ## Show this help.
 pull-images: ## Pull the needed docker images.
 	docker pull postgres:16-alpine
 
-create-network: ## Create the backend-webwizards-network.
-	docker network create backend-webwizards-network
+create-network: ## Create the ww-network.
+	docker network create ww-network
 
 create-db: ## Create the database.
 	docker exec -it postgres16 createdb --username=root --owner=root main_db
 
 drop-db: ## Drop the database.
-	docker exec -it postgres16  dropdb main_db
+	docker exec -it postgres16 dropdb main_db
 
 migrate-up: ## Apply all up migrations.
 	migrate -path db/migration -database "$(DB_URL)" -verbose up
@@ -29,7 +29,7 @@ migrate-down-1: ## Apply the last down migration.
 
 # https://hub.docker.com/_/postgres
 run-postgres: ## Run postgresql database docker image.
-	docker run --name postgres16 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
+	docker run --name postgres16 --network ww-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
 
 start-postgres16: ## Start available postgresql database docker container.
 	docker start postgres16
