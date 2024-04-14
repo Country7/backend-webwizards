@@ -1185,6 +1185,7 @@ go.mod
     $ git commit -m"update go to 1.22"
     $ git push -u origin deploying
 
+Из терминала переходим по ссылке    
 <https://github.com/Country7/backend-webwizards/pull/new/deploying>
 
     Name -> Add docker
@@ -1194,6 +1195,54 @@ go.mod
     $ migrate -version
         v4.17.0
     $ make migrate-up
+
+.github/workflows/test.yml
+
+    curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+
+    $ git add .
+    $ git status
+    $ git commit -m"upgrade golang-migrate to v4.17.0"
+    $ git push
+
+__Если тесты на github пройдены, то приложение готово к 1 запуску__
+
+Создаем __Dockerfile__:
+
+<https://hub.docker.com/_/golang>
+
+    FROM golang:1.22.2-alpine3.19
+    WORKDIR /app
+    COPY . .
+    RUN go build -o main main.go
+    EXPOSE 8080
+    CMD [ "/app/main" ]
+
+    $ docker build --help
+    $ docker build -t webwizards:latest .
+    $ docker images
+        webwizards latest 601MB
+
+Размер образа получился 601Мб, чтобы уменьшить размер образа нужно применить многоступенчатую сборку. Нам в образе нужен только исполняемый файл.   
+__Dockerfile__:
+
+    # Build stage
+        FROM golang:1.22.2-alpine3.19 AS builder
+        WORKDIR /app
+        COPY . .
+        RUN go build -o main main.go
+    # Run stage
+        FROM alpine:3.19
+        WORKDIR /app
+        COPY --from=builder /app/main .
+        EXPOSE 8080
+        CMD [ "/app/main" ]
+
+    $ docker build -t webwizards:latest .
+    $ docker images
+        webwizards latest 21MB
+
+    $ docker rmi 61504815c89a   // удалить старый образ IMAGE ID = 61504815c89a
 
 
 
