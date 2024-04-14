@@ -1244,6 +1244,80 @@ __Dockerfile__:
 
     $ docker rmi 61504815c89a   // удалить старый образ IMAGE ID = 61504815c89a
 
+<br>
+<br>
+
+## 24. Подключить контейнеры в одной сети docker (3.2)
+
+    $ docker run --name webwizards -p 8080:8080 webwizards:latest
+        cannot load config:Config File "app" Not Found in "[/app]"
+    $ docker ps -a
+    $ docker rm webwizards
+    $ docker images
+    $ docker rmi a4809227e909
+
+__Dockerfile__:
+
+    COPY app.env .
+
+    $ docker build -t webwizards:latest .
+    $ docker images
+    $ docker run --name webwizards -p 8080:8080 webwizards:latest
+        Running in "debug" mode. Switch to "release" mode in production.
+        - using env:	export GIN_MODE=release
+    $ docker rm webwizards
+    $ docker run --name webwizards -p 8080:8080 -e GIN_MODE=release webwizards:latest
+    $ docker ps
+
+__Postman__: "error": "dial tcp 127.0.0.1:5432: connect: connection refused"   
+__Terminal__: [GIN] | 500 | 1.437083ms | 192.168.65.1 | POST "/users/login"    
+__app.env__: DB_SOURCE=postgresql://root:secret@localhost:5432/main_db?sslmode=disable
+
+    $ docker container inspect postgres16
+        "NetworkSettings": "Networks": "bridge": "IPAddress": "172.17.0.2"
+    $ docker container inspect webwizards
+        "NetworkSettings": "Networks": "bridge": "IPAddress": "172.17.0.3"
+
+    $ docker stop webwizards
+    $ docker rm webwizards
+    $ docker run --name webwizards -p 8080:8080 -e GIN_MODE=release -e "DB_SOURCE=postgresql://root:secret@172.17.0.2:5432/main_db?sslmode=disable" webwizards:latest
+
+__Postman__: Status 200 OK
+
+### Способ получше (подключиться к контейнеру postgres16 по имени, а не по ip адресу)
+
+    $ docker rm webwizards
+    $ docker network ls
+        9a00594f4037 bridge bridge local
+    $ docker network inspect bridge
+        "Containers": "Name": "postgres16"
+    // контейнеры в мостовой сети bridge не могут видеть друг друга по имени, как в других сетях
+    // поэтому нужно создать свою сеть и подключить к ней контейнер
+    $ docker network --help
+    $ docker network create ww-network
+    $ docker network connect --help 
+    $ docker network connect ww-network postgres16
+    $ docker container inspect postgres16
+        "Networks":
+            "bridge": "IPAddress": "172.17.0.2"
+            "ww-network": "IPAddress": "172.18.0.2"
+    $ docker run --name webwizards --network ww-network -p 8080:8080 -e GIN_MODE=release -e "DB_SOURCE=postgresql://root:secret@postgres16:5432/main_db?sslmode=disable" webwizards:latest
+
+__Postman__: Status 200 OK
+__Terminal__: [GIN] | 200 | 101.980875ms | 192.168.65.1 | POST "/users/login"
+
+    $ docker network inspect ww-network
+        "Containers":
+            "Name": "postgres16"
+            "Name": "webwizards",
+
+Makefile
+
+    run-postgres: ## Run postgresql database docker image.
+	    docker run --name postgres16 --network ww-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
+
+
+
 
 
 
