@@ -654,7 +654,7 @@ api/transfer.go
 ```
 
 __Postman:__
-
+```json
     POST http://localhost:8080/transfers
     Body raw JSON
     {
@@ -663,6 +663,7 @@ __Postman:__
         "amount": 10,
         "currency": "EUR"
     }
+```
 
 util/random.go
 ```go
@@ -730,12 +731,87 @@ Export PostgreSQL
 <br>
 
 
+# 16. Обработка ошибок базы данных (2.6)
 
+db/query/user.sql
+```shell
+    $ make sqlc
+```
 
+Появился db/sqlc/user.sql.go   
 
+Изменились  
+db/sqlc/models.go   
+db/sqlc/querier.go   
 
+Пишем db/sqlc/user_test.go
 
+Правим db/sqlc/account_test.go
+```go
+    func createRandomAccount(t *testing.T) Account {
+        user := createRandomUser(t)
+        arg := CreateAccountParams{
+            Owner:    user.Username,
+            ...
+        }
+```
 
+```shell
+    $ make mock
+    $ make test
+```
+
+Допиливаем api/account.go
+```go
+	account, err := server.store.CreateAccount(ctx, arg)
+	if err != nil {
+		var pqErr *pq.Error                         // добавляем от сюда
+		if errors.As(err, &pqErr) {
+			switch pqErr.Code.Name() {
+			case "foreign_key_violation", "unique_violation":
+                    // ошибки на сервере при создании аккаунта без юзера,
+                    // и создании аккаунта с одинаковой валютой счета
+				ctx.JSON(http.StatusForbidden, errorResponse(err))
+				return
+			}
+		}                                           // до сюда
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+```
+
+__Postman:__
+```json
+    POST http://localhost:8080/users
+    Body raw JSON
+    {
+        "username": "QuangBang",
+        "password": "secret",
+        "full_name": "Quang Bang",
+        "email": "quang@mail.com"
+    }
+    POST http://localhost:8080/users/login
+    Body raw JSON
+    {
+        "username": "QuangBang",
+        "password": "secret"
+    }
+    POST http://localhost:8080/accounts
+    Authorization  Bearer Token  ...
+    Body raw JSON
+    {
+        "owner": "QuangBang",
+        "currency": "USD"
+    }
+    GET http://localhost:8080/accounts?page_id=1&page_size=5
+    key   page_id 1   page_size 5
+    Body raw JSON
+    {
+        "owner":  "QuangBang",
+        "limit":  5,
+        "offset": 0
+    }
+```
 <br>
 <br>
 
