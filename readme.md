@@ -1167,7 +1167,7 @@ api/account_test.go
 
 ## 23. Образ Golang Docker с помощью многоступенчатого файла Dockerfile (3.1)
 
-    $ git checkout -b ft/docker
+    $ git checkout -b deploying
 
 update go
 
@@ -1178,6 +1178,24 @@ go.mod
 .github/workflows/test.yml
 
     go-version: '1.22'
+
+    $ git status
+    $ git add .
+    $ git status
+    $ git commit -m"update go to 1.22"
+    $ git push -u origin deploying
+
+<https://github.com/Country7/backend-webwizards/pull/new/deploying>
+
+    Name -> Add docker
+    -> Create pull request
+
+    $ brew upgrade golang-migrate
+    $ migrate -version
+        v4.17.0
+    $ make migrate-up
+
+
 
 
 
