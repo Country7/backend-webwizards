@@ -1303,7 +1303,7 @@ __Postman__: Status 200 OK
             "ww-network": "IPAddress": "172.18.0.2"
     $ docker run --name webwizards --network ww-network -p 8080:8080 -e GIN_MODE=release -e "DB_SOURCE=postgresql://root:secret@postgres16:5432/main_db?sslmode=disable" webwizards:latest
 
-__Postman__: Status 200 OK
+__Postman__: Status 200 OK   
 __Terminal__: [GIN] | 200 | 101.980875ms | 192.168.65.1 | POST "/users/login"
 
     $ docker network inspect ww-network
@@ -1315,6 +1315,60 @@ Makefile
 
     run-postgres: ## Run postgresql database docker image.
 	    docker run --name postgres16 --network ww-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
+
+<br>
+<br>
+
+## 25. Файл docker-compose (3.3)
+
+Docker Compose для автоматической настройки всех служб   
+
+docker-compose.yaml     // .yaml очень чувствителен к пробелам, устанавливаем 2 пробела для Tab Size
+
+    $ docker compose up
+    $ docker images
+    $ docker ps
+    $ docker network inspect ww-network
+
+__Postman__: Status: 500 Internal Server Error
+
+    {
+        "error": "pq: relation \"users\" does not exist"
+    }
+    // Потому как не было миграции
+
+Допиливаем __Dockerfile__ для добавления миграции:
+
+    # Build stage
+    RUN apk add curl
+    RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.16.2/migrate.linux-amd64.tar.gz | tar xvz
+
+    # Run stage
+    COPY --from=builder /app/migrate ./migrate
+    COPY start.sh .
+    COPY db/migration ./migration
+    ENTRYPOINT [ "/app/start.sh" ]
+
+Создаем файл start.sh
+
+    $ chmod +x start.sh    // делаем его исполняемым
+
+__start.sh__:
+
+    #!/bin/sh
+    set -e
+    echo "run db migration"
+    source /app/app.env
+    /app/migrate -path /app/migration -database "$DB_SOURCE" -verbose up
+    echo "start the app"
+    exec "$@"
+
+
+    $ docker compose down  // удалит все контейнеры и сети
+    $ docker image ls
+    $ docker rmi api
+    $ docker compose up
+
 
 
 
