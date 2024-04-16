@@ -1365,24 +1365,24 @@ __start.sh__:
     echo "start the app"
     exec "$@"
 
-
     $ docker compose down  // удалит все контейнеры и сети
     $ docker image ls
     $ docker rmi api
+    $ docker network ls
     $ docker compose up
 
-!!! При запуске Docker Compose на Linux (Kubuntu) переменную $DB_SOURCE
-он взял не из docker-compose.yaml, где к адресу БД обращение по имени postgres,
-а из файла app.env, где адрес указан localhost. 
+!!! При запуске Docker Compose на Linux (Kubuntu) переменную $DB_SOURCE   
+он взял не из docker-compose.yaml, где к адресу БД обращение по имени postgres,   
+а из файла app.env, где адрес указан localhost.   
 
     api | error: dial tcp 127.0.0.1:5432: connect: connection refused
 
 Пришлось в app.env внести изменения:
 
-    # DB_SOURCE=postgresql://root:secret@localhost:5432/main_db?sslmode=disable
+    # DB_SOURCE=postgresql://root:secret@localhost:5432/main_db?sslmode=disable   
     DB_SOURCE=postgresql://root:secret@postgres:5432/main_db?sslmode=disable
 
-[GIN] | 200 | 144.777766ms | 172.20.0.1 | POST "/users"
+[GIN] | 200 | 144.777766ms | 172.20.0.1 | POST "/users"   
 [GIN] | 200 | 123.707554ms | 172.20.0.1 | POST "/users/login"
 
 
