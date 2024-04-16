@@ -1191,7 +1191,9 @@ go.mod
     Name -> Add docker
     -> Create pull request
 
-    $ brew upgrade golang-migrate
+    $ brew upgrade golang-migrate   // для mac
+    $ curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+        // для linux
     $ migrate -version
         v4.17.0
     $ make migrate-up
@@ -1368,6 +1370,21 @@ __start.sh__:
     $ docker image ls
     $ docker rmi api
     $ docker compose up
+
+!!! При запуске Docker Compose на Linux (Kubuntu) переменную $DB_SOURCE
+он взял не из docker-compose.yaml, где к адресу БД обращение по имени postgres,
+а из файла app.env, где адрес указан localhost. 
+
+    api | error: dial tcp 127.0.0.1:5432: connect: connection refused
+
+Пришлось в app.env внести изменения:
+
+    # DB_SOURCE=postgresql://root:secret@localhost:5432/main_db?sslmode=disable
+    DB_SOURCE=postgresql://root:secret@postgres:5432/main_db?sslmode=disable
+
+[GIN] | 200 | 144.777766ms | 172.20.0.1 | POST "/users"
+[GIN] | 200 | 123.707554ms | 172.20.0.1 | POST "/users/login"
+
 
 
 
