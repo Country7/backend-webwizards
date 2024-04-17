@@ -1385,6 +1385,22 @@ __start.sh__:
 [GIN] | 200 | 144.777766ms | 172.20.0.1 | POST "/users"   
 [GIN] | 200 | 123.707554ms | 172.20.0.1 | POST "/users/login"
 
+<br>
+<br>
+
+## 26. Учетная запись AWS бесплатно (3.4)
+
+[aws.amazon.com](https://aws.amazon.com/ru/free)
+
+
+
+
+
+
+
+
+
+
 
 
 
