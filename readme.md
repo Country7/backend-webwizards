@@ -1392,18 +1392,63 @@ __start.sh__:
 
 [aws.amazon.com](https://aws.amazon.com/ru/free)
 
+<br>
+<br>
+
+## 27. Авто- создание и отправка образа docker в AWS ECR с помощью действий на Github (3.5)
+
+ECR - Amazon Elastic Container Registry   
+https://console.aws.amazon.com/iam/home?region=eu-west-1#/usersSnew?step=final&accessKey&userNames=github-ci&groups=deployment   
+
+.github/workflows/ci.yml  переименовывыем в .github/workflows/test.yml
+
+    name: Run unit test
+
+.github/workflows/deploy.yml
+
+https://github.com/marketplace?category=&copilot_app=false&query=&type=actions&verification=
+
+https://github.com/marketplace/actions/amazon-ecr-login-action-for-github-actions
+
+Github / backend-webwizards / Settings / Secrets and variables / Actions secrets and variables   
+https://github.com/Country7/backend-webwizards/settings/secrets/actions
+
+    -> New repository secret
+        AWS_ACCESS_KEY_ID = 
+        AWS_SECRET_ACCESS_KEY = 
+<br>
+<br>
 
 
+## 28. Создание производственной базы данных на AWS RDS  (3.6)
+
+https://eu-west-1.console.aws.amazon.com/rds/home?region=eu-west-1#databases:
+
+<br>
+<br>
 
 
+## 29. AWS secrets manager  (3.7)
 
+app.env   
 
+https://eu-west-1.console.aws.amazon.com/secretsmanager/home?region=eu-west-1#!/home
 
+    DB_SOURCE= // получаем при развертывании БД
+    DB_DRIVER=postgres
+    SERVER_ADDRESS=0.0.0.0:8080
+    ACCESS_TOKEN_DURATION=15m
+    TOKEN_SYMMETRIC_KEY=87512f7b8b2771f04a8e5d202bda8e67
 
+__Сгенерируем ключ-строку из 32 символов__:
 
+    $ openssl rand -hex 64
+        // строка 128 символов
+    $ openssl rand -hex 64 | head -c 32
+        // строка 32 символа
 
-
-
+    $ aws secretsmanager get-secret-value --secret-id main_db -query SecretString -output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
+        // эта командная строка в deploy для добавления секретных ключей в app.env
 
 
 
