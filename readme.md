@@ -1450,8 +1450,102 @@ __Сгенерируем ключ-строку из 32 символов__:
     $ aws secretsmanager get-secret-value --secret-id main_db -query SecretString -output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
         // эта командная строка в deploy для добавления секретных ключей в app.env
 
+<br>
+<br>
 
 
+## 30. Архитектура Kubernetes и как создать ECS-кластер на AWS  (3.8)
+
+* __Kubernetes__
+    - Механизм оркестровки контейнеров с открытым исходным кодом
+    - Для автоматизации развертывания, масштабирования и управления контейнеризированными приложениями
+<br><br>
+
+#### __Компоненты Kubernetes:__ 
+*     
+    - Агент Kubelet: убедитесь, что контейнеры помещаются в Pod (контейнеры-капсулы)
+    - Время выполнения контейнера: Docker, containerd, CRI-O
+    - Kube-proxy: поддерживает сетевые правила, разрешает связь с модулями
+<br><br>
+
+* __Worker node - Рабочий узел__
+    + Kubelet: 
+        - Pod1 [Container1, Container2]
+        - Pod2 [Container3], 
+        - Pod...; 
+    + Kube-proxy
+<br>
+
+* __Master node (Control plane) - Главный узел (плоскость управления)__   
+    + API server
+        - etcd (электронный код)
+        - scheduler (планировщик)
+        - controller manager (менеджер контроллеров)
+            - { node controller (контроллер узла) }
+            - { job controller (контроллер задания) }
+            - { end-point controller (контроллер конечной точки) }
+            - { service account & token controller (контроллер учетной записи службы и токена) }
+        - cloud controller manager (диспетчер облачных контроллеров) ------> Cloud provider API (API облачного провайдера)
+            - { node controller (контроллер узла) }
+            - { route controller (контроллер маршрута) }
+            - { service controller (контроллер сервиса) }
+<br><br>
+
+__Elastic Kubernetes Service (Amazon EKS)__   
+https://eu-west-1.console.aws.amazon.com/eks/home?region=eu-west-1
+
+<br>
+<br>
+
+
+## 31. kubectl и k9s для подключения к кластеру kubernetes в AWS EKS  (3.9)
+
+__kubectl__   
+Инструмент командной строки Kubernetes, kubectl, позволяет выполнять команды для кластеров Kubernetes. Вы можете использовать kubectl для развертывания приложений, проверки ресурсов кластера и управления ими, а также просмотра журналов.
+
+https://kubernetes.io/docs/tasks/tools/
+
+    $ brew install kubectl
+    $ kubectl version --client
+    $ kubectl cluster-info
+        // ошибка, потому как нет локального кластера
+    $ aws eks update-kubeconfig --name main_db --region eu-west-1
+        // ошибка доступа
+
+https://console.aws.amazon.com/iam/home?region=eu-west-1#/home
+
+    $ aws eks update-kubeconfig --name main_db --region eu-west-1
+    $ 1s -1 ~/.kube
+    $ cat ~/.kube/config
+    $ kubectl config use-context arn:aws:eks:eu-west-1:095420225348:cluster/main_db
+    $ kubectl cluster-info
+        // ошибка авторизации сервера, не авторизован как пользователь кластера
+    
+https://aws.amazon.com/premiumsupport/knowledge-center/amazon-eks-cluster-access/
+
+    $ aws sts get-caller-identity
+        // не тот пользователь, который создал кластер
+    $ kubectl get pods
+        // вы должны авторизоваться
+    $ cat ~/.aws/credentials
+
+https://console.aws.amazon.com/iam/home?region=eu-west-1#/security_credentials
+
+    -> Create New Access Key
+
+    $ vi ~/.aws/credentials
+        [default]
+        aws_access_key_id = AKIARMN35C5CE3JSV3DE
+        aws_secret_access_key = nSU4/†BcxEQwq6aU6BiZbvUpTjuQ0SHRmdAjanQi
+        [github]
+        aws_access_key_id = AKIARMN35C5CG3LIRKG4
+        aws_secret_access_key = xICCy4MI0HInm®JoitDNWHWvJUDEVShLtzuRe/Yz
+    $ kubectl get pods
+        // нет ресурсов
+    $ kubectl cluster-info
+        // Kubernetes control plane is running at ...
+
+8:12
 
 
 
