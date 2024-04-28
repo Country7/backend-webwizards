@@ -1544,8 +1544,47 @@ https://console.aws.amazon.com/iam/home?region=eu-west-1#/security_credentials
         // нет ресурсов
     $ kubectl cluster-info
         // Kubernetes control plane is running at ...
+    $ cat ~/.aws/credentials
+    $ export AWS_PROFILE=github
+    $ kubectl cluster-info
+        // error: You must be logged in to the server, (Unauthorized)
+    $ export AWS_PROFILE=default
+    $ kubectl cluster-info
+        // Kubernetes control plane is running at ...
 
-8:12
+
+__Создаем папку eks для хранения файлов Kubernetes__
+
+eks/aws-auth.yaml
+
+    $ kubectl apply -f eks/aws-auth.yaml
+    $ kubectl cluster-info
+    $ kubectl get service
+    $ kubectl get pods
+
+https://k9scli.io/
+
+    $ brew install k9s
+    $ k9s
+
+<br>
+<br>
+
+
+## 32. Развернуть веб-приложение в кластере Kubernetes на AWS EKS (3.10)
+
+eks/deployment.yaml
+
+    $ k9s
+    $ kubectl apply -f eks/deployment.yaml
+
+eks/service.yaml
+
+    $ kubectl apply -f eks/service.yaml
+
+
+
+
 
 
 
