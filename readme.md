@@ -1582,14 +1582,16 @@ eks/service.yaml
 
     $ kubectl apply -f eks/service.yaml
 
+<br>
+<br>
 
 
+## 33. Регистрация домена и настройка A-записи с помощью Route53  (3.11)
 
+https://console.aws.amazon.com/route53/v2/home#Dashboard
 
-
-
-
-
+    $ nslookup ....eu-west-1.elb.amazonaws.com
+    $ nslookup api.webwizards.org
 
 
 
